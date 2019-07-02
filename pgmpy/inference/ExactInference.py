@@ -4,7 +4,6 @@ import itertools
 
 import networkx as nx
 import numpy as np
-from tqdm import tqdm
 from pgmpy.extern.six.moves import filter, range
 
 from pgmpy.extern.six import string_types
@@ -159,16 +158,8 @@ class VariableElimination(Inference):
         )
 
         # Step 3: Run variable elimination
-        pbar = tqdm(elimination_order)
-        for var in pbar:
-            pbar.set_description("Eliminating: {var}".format(var=var))
-            # Removing all the factors containing the variables which are
-            # eliminated (as all the factors should be considered only once)
-            factors = [
-                factor
-                for factor in working_factors[var]
-                if not set(factor.variables).intersection(eliminated_variables)
-            ]
+        for var in elimination_order:
+            factors = [factor for factor in working_factors[var] if not set(factor.variables).intersection(eliminated_variables)]
             phi = factor_product(*factors)
             phi = getattr(phi, operation)([var], inplace=False)
             del working_factors[var]

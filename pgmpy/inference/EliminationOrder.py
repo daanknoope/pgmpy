@@ -1,6 +1,5 @@
 from abc import abstractmethod
 from itertools import combinations
-from tqdm import tqdm
 
 import numpy as np
 
@@ -88,17 +87,14 @@ class BaseEliminationOrder:
 
         ordering = []
 
-        with tqdm(total=len(nodes)) as pbar:
-            pbar.set_description("Finding Elimination Order: ")
-            while nodes:
-                scores = {node: self.cost(node) for node in nodes}
-                min_score_node = min(scores, key=scores.get)
-                ordering.append(min_score_node)
-                nodes.remove(min_score_node)
-                self.bayesian_model.remove_node(min_score_node)
-                self.moralized_model.remove_node(min_score_node)
+        while nodes:
+            scores = {node: self.cost(node) for node in nodes}
+            min_score_node = min(scores, key=scores.get)
+            ordering.append(min_score_node)
+            nodes.remove(min_score_node)
+            self.bayesian_model.remove_node(min_score_node)
+            self.moralized_model.remove_node(min_score_node)
 
-                pbar.update(1)
         return ordering
 
     def fill_in_edges(self, node):
